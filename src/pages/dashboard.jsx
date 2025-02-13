@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Upload, FileText, Calendar, User, Clock, Bell, Search, Settings, ChevronDown, Menu } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; 
+import { Upload, FileText, Calendar, User, Clock, Bell, Search, Settings, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '../components/card';
 
 const Dashboard = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
   
   const [documents] = useState([
     {
@@ -37,18 +39,8 @@ const Dashboard = () => {
     }
   ]);
 
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
+  const handleCardClick = () => {
+    navigate('/document'); // Navigate to the document page when clicked
   };
 
   return (
@@ -121,26 +113,10 @@ const Dashboard = () => {
         </div>
 
         {/* Upload Section */}
-        <div
-          className={`
-            mb-8 rounded-xl border-2 border-dashed transition-all duration-200
-            ${isDragging 
-              ? 'border-blue-500 bg-blue-50' 
-              : 'border-gray-300 hover:border-blue-400'
-            }
-          `}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-        >
+        <div className="mb-8 rounded-xl border-2 border-dashed border-gray-300 hover:border-blue-400 transition-all duration-200">
           <div className="text-center py-12">
-            <Upload 
-              size={48} 
-              className={`mx-auto mb-4 ${isDragging ? 'text-blue-500' : 'text-gray-400'}`}
-            />
-            <h3 className="text-lg font-semibold mb-2">
-              Drop your PDF files here
-            </h3>
+            <Upload size={48} className="mx-auto mb-4 text-gray-400" />
+            <h3 className="text-lg font-semibold mb-2">Drop your PDF files here</h3>
             <p className="text-gray-500 mb-4">or</p>
             <button className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors shadow-sm">
               Browse Files
@@ -151,51 +127,50 @@ const Dashboard = () => {
         {/* Documents Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {documents.map((doc) => (
-            <Card 
-              key={doc.id}
-              className="hover:shadow-lg transition-all duration-200 border border-gray-200"
-            >
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-blue-50 rounded-lg">
-                    <FileText className="h-6 w-6 text-blue-500" />
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-sm font-medium text-blue-500 bg-blue-50 px-3 py-1 rounded-full mb-2">
-                      {doc.type}
-                    </span>
-                    <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                      doc.status === 'Processed' 
-                        ? 'bg-green-100 text-green-600' 
-                        : 'bg-yellow-100 text-yellow-600'
-                    }`}>
-                      {doc.status}
-                    </span>
-                  </div>
-                </div>
-                
-                <h3 className="font-semibold text-gray-800 mb-4 truncate">
-                  {doc.name}
-                </h3>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center text-gray-500">
-                    <User className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{doc.uploadedBy}</span>
+            <div key={doc.id} onClick={handleCardClick} className="cursor-pointer">
+              <Card className="hover:shadow-lg transition-all duration-200 border border-gray-200">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="p-3 bg-blue-50 rounded-lg">
+                      <FileText className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-sm font-medium text-blue-500 bg-blue-50 px-3 py-1 rounded-full mb-2">
+                        {doc.type}
+                      </span>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                        doc.status === 'Processed' 
+                          ? 'bg-green-100 text-green-600' 
+                          : 'bg-yellow-100 text-yellow-600'
+                      }`}>
+                        {doc.status}
+                      </span>
+                    </div>
                   </div>
                   
-                  <div className="flex items-center text-gray-500">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{doc.date}</span>
-                  </div>
+                  <h3 className="font-semibold text-gray-800 mb-4 truncate">
+                    {doc.name}
+                  </h3>
                   
-                  <div className="flex items-center text-gray-500">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span className="text-sm">{doc.size}</span>
+                  <div className="space-y-3">
+                    <div className="flex items-center text-gray-500">
+                      <User className="h-4 w-4 mr-2" />
+                      <span className="text-sm">{doc.uploadedBy}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-500">
+                      <Calendar className="h-4 w-4 mr-2" />
+                      <span className="text-sm">{doc.date}</span>
+                    </div>
+                    
+                    <div className="flex items-center text-gray-500">
+                      <Clock className="h-4 w-4 mr-2" />
+                      <span className="text-sm">{doc.size}</span>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       </div>
